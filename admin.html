@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ascedia - Master Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col relative">
+    
+    <div id="admin-login" class="flex items-center justify-center h-screen">
+        <div class="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md text-slate-900">
+            <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            </div>
+            <h2 class="text-2xl font-black text-center mb-2">Workspace Admin</h2>
+            <p class="text-center text-indigo-600 font-bold mb-8 tracking-widest text-sm uppercase">Ascedia Systems</p>
+            
+            <input id="adm-user" type="text" placeholder="Username (master)" class="w-full mb-4 px-5 py-4 border-none rounded-2xl bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500 transition">
+            <input id="adm-pass" type="password" placeholder="Password (master123)" class="w-full mb-8 px-5 py-4 border-none rounded-2xl bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500 transition">
+            
+            <button id="btn-adm-login" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition transform active:scale-95">Login to Portal</button>
+            <p id="adm-error" class="text-red-500 text-sm mt-4 hidden text-center font-medium"></p>
+        </div>
+    </div>
+
+    <div id="admin-panel" class="hidden h-screen flex flex-col">
+        <nav class="bg-slate-950 px-8 py-5 flex justify-between items-center border-b border-slate-800">
+            <h1 class="text-xl font-black tracking-widest uppercase flex items-center gap-3">
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+                ASCEDIA <span class="text-indigo-500">ADMIN</span>
+            </h1>
+            <button id="btn-logout" class="bg-slate-800 hover:bg-red-600 px-5 py-2.5 rounded-xl font-bold text-sm transition text-slate-300 hover:text-white">Sign Out</button>
+        </nav>
+
+        <div class="flex-1 p-8 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8 overflow-hidden">
+            <div class="bg-slate-800 p-8 rounded-[32px] border border-slate-700 h-fit shadow-xl">
+                <h3 class="text-lg font-bold mb-6 text-white flex items-center gap-2">
+                    <span class="w-2 h-6 bg-indigo-500 rounded-full"></span> New Client Setup
+                </h3>
+                <div class="space-y-4 text-slate-900">
+                    <input id="n-user" type="text" placeholder="Username (e.g. nini)" class="w-full px-5 py-3.5 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    <input id="n-pass" type="password" placeholder="Password" class="w-full px-5 py-3.5 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    <input id="n-shop" type="text" placeholder="Shop Name" class="w-full px-5 py-3.5 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    <select id="n-plan" class="w-full px-5 py-3.5 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                        <option value="7d">7 Days Free Trial</option>
+                        <option value="1">1 Month Premium</option>
+                        <option value="3">3 Months Premium</option>
+                        <option value="6">6 Months Premium</option>
+                        <option value="12">1 Year Enterprise</option>
+                    </select>
+                    <button id="btn-create" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-500 transition mt-4 shadow-lg shadow-indigo-900/50">Deploy Workspace</button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-slate-800 p-8 rounded-[32px] border border-slate-700 flex flex-col shadow-xl">
+                <h3 class="text-lg font-bold mb-6 text-white flex items-center gap-2">
+                    <span class="w-2 h-6 bg-emerald-500 rounded-full"></span> Active Workspaces
+                </h3>
+                <div class="overflow-y-auto flex-1 pr-2">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-slate-400 border-b border-slate-700 sticky top-0 bg-slate-800 z-10">
+                            <tr>
+                                <th class="pb-4 font-semibold">Store Details</th>
+                                <th class="pb-4 font-semibold">Admin User</th>
+                                <th class="pb-4 font-semibold">Valid Until</th>
+                                <th class="pb-4 font-semibold text-right">Status / Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shop-list" class="divide-y divide-slate-700/50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 w-full max-w-md shadow-2xl">
+            <h3 class="text-xl font-bold text-white mb-2">Edit Expiry Date</h3>
+            <p id="edit-shop-name" class="text-indigo-400 mb-6 font-semibold text-sm"></p>
+            <input type="hidden" id="edit-user-id">
+            
+            <div class="mb-8">
+                <label class="block text-slate-400 text-xs uppercase tracking-widest font-bold mb-3">Set New Expiry Date</label>
+                <input type="date" id="edit-new-date" class="w-full px-5 py-4 rounded-xl bg-slate-900 border border-slate-700 text-white outline-none focus:ring-2 focus:ring-indigo-500 transition cursor-pointer">
+            </div>
+            
+            <div class="flex gap-4">
+                <button onclick="closeEditModal()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3.5 rounded-xl transition">Cancel</button>
+                <button id="btn-save-expiry" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-900/50 transition">Update Date</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, updateDoc, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC53tnpw-3Uupzc1Me8ZGEDzy903yG-S0Y",
+            authDomain: "ascedia-60dd4.firebaseapp.com",
+            databaseURL: "https://ascedia-60dd4-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ascedia-60dd4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const adminApp = initializeApp(firebaseConfig, "AdminCreator");
+        const adminAuth = getAuth(adminApp);
+
+        // Login Logic
+        document.getElementById('btn-adm-login').onclick = async () => {
+            const u = document.getElementById('adm-user').value.trim();
+            const p = document.getElementById('adm-pass').value;
+            const err = document.getElementById('adm-error');
+            err.classList.add('hidden');
+
+            if (u === 'master' && p === 'master123') {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                loadShops();
+                return; 
+            }
+
+            const email = u.includes('@') ? u : `${u}@pos.local`;
+
+            if(email !== 'admin@pos.local') {
+                err.innerText = "Access Denied: Master Admin Only!"; err.classList.remove('hidden'); return;
+            }
+
+            try {
+                document.getElementById('btn-adm-login').innerText = "Authenticating...";
+                await signInWithEmailAndPassword(auth, email, p);
+            } catch (e) {
+                err.innerText = "Authentication Failed. Try again."; err.classList.remove('hidden');
+                document.getElementById('btn-adm-login').innerText = "Login to Portal";
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === 'admin@pos.local') {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                loadShops();
+            } 
+        });
+
+        document.getElementById('btn-logout').onclick = () => { signOut(auth); location.reload(); };
+
+        // Create User Workspace
+        document.getElementById('btn-create').onclick = async () => {
+            const u = document.getElementById('n-user').value.trim().replace(/\s/g, '');
+            const p = document.getElementById('n-pass').value;
+            const s = document.getElementById('n-shop').value;
+            const planVal = document.getElementById('n-plan').value; 
+            
+            if(!u || !p || !s) return alert("Please fill all required fields.");
+            document.getElementById('btn-create').innerText = "Deploying Workspace...";
+
+            try {
+                const cred = await createUserWithEmailAndPassword(adminAuth, `${u}@pos.local`, p);
+                const shopRef = doc(collection(db, "shops"));
+                
+                const exp = new Date();
+                if (planVal === '7d') {
+                    exp.setDate(exp.getDate() + 7);
+                } else {
+                    exp.setMonth(exp.getMonth() + parseInt(planVal));
+                }
+
+                await setDoc(shopRef, { shopName: s, createdAt: new Date().toISOString() });
+                await setDoc(doc(db, "users", cred.user.uid), {
+                    username: u, shopId: shopRef.id, shopName: s, role: 'user',
+                    expiryDate: exp.toISOString(), createdAt: new Date().toISOString()
+                });
+                
+                alert(`Success! Workspace for '${s}' is now active.`);
+                document.getElementById('n-user').value = ''; document.getElementById('n-pass').value = ''; document.getElementById('n-shop').value = '';
+            } catch(e) { alert("Error: " + e.message); }
+            
+            document.getElementById('btn-create').innerText = "Deploy Workspace";
+            adminAuth.signOut();
+        };
+
+        // Load Workspaces to Table
+        function loadShops() {
+            const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snap) => {
+                const body = document.getElementById('shop-list');
+                body.innerHTML = '';
+                snap.forEach(d => {
+                    const data = d.data();
+                    if(data.role === 'user') {
+                        const isExp = new Date() > new Date(data.expiryDate);
+                        
+                        body.innerHTML += `<tr class="border-b border-slate-700/30 hover:bg-slate-700/20 transition">
+                            <td class="py-5 font-bold text-slate-100">${data.shopName}</td>
+                            <td class="py-5 font-mono text-slate-400 text-xs">@${data.username}</td>
+                            <td class="py-5 text-sm ${isExp ? 'text-red-400 font-bold' : 'text-slate-300'}">${new Date(data.expiryDate).toLocaleDateString()}</td>
+                            <td class="py-5 flex justify-end items-center gap-2">
+                                ${isExp ? '<span class="bg-red-500/10 text-red-400 border border-red-500/20 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider">Expired</span>' : '<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider">Active</span>'}
+                                
+                                <button onclick="openEditModal('${d.id}', '${data.shopName}', '${data.expiryDate}')" class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">Edit Date</button>
+                                
+                                <button onclick="removeWorkspace('${d.id}', '${data.shopId}', '${data.shopName}')" class="bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition">Remove</button>
+                            </td>
+                        </tr>`;
+                    }
+                });
+            });
+        }
+
+        // --- EDIT EXPIRY MODAL LOGIC ---
+        window.openEditModal = (userId, shopName, currentExpiry) => {
+            document.getElementById('edit-user-id').value = userId;
+            document.getElementById('edit-shop-name').innerText = `Workspace: ${shopName}`;
+            
+            const dateObj = new Date(currentExpiry);
+            const dateString = dateObj.toISOString().split('T')[0];
+            
+            document.getElementById('edit-new-date').value = dateString;
+            document.getElementById('edit-modal').classList.remove('hidden');
+        };
+
+        window.closeEditModal = () => {
+            document.getElementById('edit-modal').classList.add('hidden');
+        };
+
+        // Save New Expiry Date
+        document.getElementById('btn-save-expiry').onclick = async () => {
+            const userId = document.getElementById('edit-user-id').value;
+            const newDateStr = document.getElementById('edit-new-date').value;
+            
+            if (!newDateStr) return alert("Please select a valid date.");
+            
+            const btn = document.getElementById('btn-save-expiry');
+            btn.innerText = "Updating...";
+            
+            try {
+                const newExpiry = new Date(newDateStr);
+                newExpiry.setUTCHours(23, 59, 59, 999); // Set to end of the selected day
+                
+                await updateDoc(doc(db, "users", userId), {
+                    expiryDate: newExpiry.toISOString()
+                });
+                
+                alert("Expiry date updated successfully!");
+                closeEditModal();
+            } catch (error) {
+                alert("Error updating date: " + error.message);
+            }
+            
+            btn.innerText = "Update Date";
+        };
+
+        // Remove Workspace
+        window.removeWorkspace = async (userId, shopId, shopName) => {
+            if (confirm(`Are you sure you want to permanently delete the workspace and user for '${shopName}'? This action cannot be undone.`)) {
+                try {
+                    await deleteDoc(doc(db, "users", userId));
+                    if (shopId) { await deleteDoc(doc(db, "shops", shopId)); }
+                } catch (error) {
+                    alert("Error removing workspace: " + error.message);
+                }
+            }
+        };
+    </script>
+</body>
+</html>
